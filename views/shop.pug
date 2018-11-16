@@ -1,0 +1,22 @@
+extends layouts/main-layout
+
+block styles
+    link(rel="stylesheet", href="/css/product.css")
+
+block content
+    main
+        if products.length > 0
+            .grid
+                each product in products
+                    article.card.product-item
+                        header.card__header
+                            h1.product__title #{product.title}
+                        .card__image
+                            img(src="https://cdn.pixabay.com/photo/2018/10/14/12/16/lago-federa-3746335_960_720.jpg")
+                        .card__content
+                            h2.product__price A very interesting book about surviving in the wild nature
+                            p.product__description $9.99
+                        .card__actions
+                            button.btn Add to Cart
+        else
+            h1 No Products
