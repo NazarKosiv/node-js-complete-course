@@ -101,6 +101,12 @@ main {
   cursor: pointer;
 }
 
+.edit-btn {
+  text-decoration: none;
+  margin: 0;
+  padding: 3px 5px;
+}
+
 .btn:hover,
 .btn:active {
   background-color: #00695c;

@@ -2,36 +2,89 @@ const fs = require('fs');
 const path = require('path');
 
 const p = path.join(
-  path.dirname(process.mainModule.filename),
-  'data',
-  'products.json'
+    path.dirname(process.mainModule.filename),
+    'data',
+    'products.json'
 );
 
-const getProductsFromFile = cb => {
-  fs.readFile(p, (err, fileContent) => {
-    if (err) {
-      cb([]);
-    } else {
-      cb(JSON.parse(fileContent));
-    }
-  });
-};
-
 module.exports = class Product {
-  constructor(t) {
-    this.title = t;
-  }
+    constructor(title, imageUrl, description, price) {
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.description = description;
+        this.price = price;
+    }
 
-  save() {
-    getProductsFromFile(products => {
-      products.push(this);
-      fs.writeFile(p, JSON.stringify(products), err => {
-        console.log(err);
-      });
-    });
-  }
+    save() {
+        return new Promise((resolve, reject) => {
+            fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const products = JSON.parse(fileContent);
 
-  static fetchAll(cb) {
-    getProductsFromFile(cb);
-  }
+                    products.push(this);
+
+                    const productsJson = JSON.stringify(products);
+                    fs.writeFile(p, productsJson, err => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    static fetchAll() {
+        return new Promise((resolve, reject) => {
+            fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const products = JSON.parse(fileContent);
+
+                    resolve(products);
+                }
+            });
+        });
+    }
+
+    static fetchProduct(index) {
+        return new Promise((resolve, reject) => {
+            fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const products = JSON.parse(fileContent);
+                    const product = products[index];
+                    resolve(product);
+                }
+            });
+        });
+    }
+
+    static editProduct(index, product) {
+        return new Promise((resolve, reject) => {
+            fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const products = JSON.parse(fileContent);
+                    products[index] = product;
+
+                    const productsJson = JSON.stringify(products);
+                    fs.writeFile(p, productsJson, err => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                }
+            });
+        });
+    }
 };
