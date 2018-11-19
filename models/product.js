@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const idGenerator = require('../util/unique-id-generator');
+
 const p = path.join(
     path.dirname(process.mainModule.filename),
     'data',
@@ -16,6 +18,8 @@ module.exports = class Product {
     }
 
     save() {
+        this.id = idGenerator();
+
         return new Promise((resolve, reject) => {
             fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
                 if (err) {
@@ -52,28 +56,34 @@ module.exports = class Product {
         });
     }
 
-    static fetchProduct(index) {
+    static fetchProduct(id) {
         return new Promise((resolve, reject) => {
             fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
                 if (err) {
                     reject(err);
                 } else {
                     const products = JSON.parse(fileContent);
-                    const product = products[index];
+                    const product = products.find(product => id === product.id);
                     resolve(product);
                 }
             });
         });
     }
 
-    static editProduct(index, product) {
+    static editProduct(id, product) {
         return new Promise((resolve, reject) => {
             fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
                 if (err) {
                     reject(err);
                 } else {
-                    const products = JSON.parse(fileContent);
-                    products[index] = product;
+                    const oldProducts = JSON.parse(fileContent);
+                    const products = oldProducts.map(prod => {
+                        if (id === prod.id) {
+                            return product;
+                        } else {
+                            return prod;
+                        }
+                    });
 
                     const productsJson = JSON.stringify(products);
                     fs.writeFile(p, productsJson, err => {

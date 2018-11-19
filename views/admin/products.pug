@@ -7,7 +7,7 @@ block content
     main
         if products.length > 0
             .grid
-                each product, index in products
+                each product in products
                     article.card.product-item
                         header.card__header
                             h1.product__title #{product.title}
@@ -19,6 +19,6 @@ block content
                         .card__actions
                             button.btn Add to Cart
                         .card__actions
-                            a.btn.edit-btn(href=('/admin/edit-product/' + index)) Edit Product
+                            a.btn.edit-btn(href=('/admin/edit-product/' + product.id)) Edit Product
         else
             h1 No Products

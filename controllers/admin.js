@@ -28,13 +28,12 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getEditProduct = (req, res, next) => {
-    const index = +req.params.id;
+    const id = req.params.id;
 
-    Product.fetchProduct(index)
+    Product.fetchProduct(id)
         .then(product => {
             res.render('admin/edit-product', {
                 product,
-                index,
                 pageTitle: 'Edit Product',
                 path: '/admin/edit-product'
             });
@@ -45,10 +44,10 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
-    const index = +req.params.id;
+    const id = req.params.id;
     const product = new Product(req.body.title, req.body.imageUrl, req.body.description, req.body.price);
 
-    Product.editProduct(index, product)
+    Product.editProduct(id, product)
         .then(() => {
             res.redirect('/');
         })

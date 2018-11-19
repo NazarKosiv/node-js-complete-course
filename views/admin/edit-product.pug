@@ -5,7 +5,7 @@ block styles
     link(rel="stylesheet", href="/css/product.css")
 
 block content
-    form(method="POST", action=("/admin/edit-product/" + index))
+    form(method="POST", action=("/admin/edit-product/" + product.id))
         .grid
             article.card.product-item
                 header.card__header
