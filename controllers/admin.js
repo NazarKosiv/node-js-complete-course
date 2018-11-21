@@ -45,7 +45,7 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
     const id = req.params.id;
-    const product = new Product(req.body.title, req.body.imageUrl, req.body.description, req.body.price);
+    const product = new Product(req.body.title, req.body.imageUrl, req.body.description, req.body.price, id);
 
     Product.editProduct(id, product)
         .then(() => {

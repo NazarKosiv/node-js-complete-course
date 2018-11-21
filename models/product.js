@@ -10,23 +10,20 @@ const p = path.join(
 );
 
 module.exports = class Product {
-    constructor(title, imageUrl, description, price) {
+    constructor(title, imageUrl, description, price, id = null) {
         this.title = title;
         this.imageUrl = imageUrl;
         this.description = description;
         this.price = price;
+        this.id = id;
     }
 
     save() {
         this.id = idGenerator();
 
         return new Promise((resolve, reject) => {
-            fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const products = JSON.parse(fileContent);
-
+            Product.fetchAll()
+                .then(products => {
                     products.push(this);
 
                     const productsJson = JSON.stringify(products);
@@ -37,8 +34,10 @@ module.exports = class Product {
                             resolve();
                         }
                     });
-                }
-            });
+                })
+                .catch(err => {
+                    reject(err);
+                });
         });
     }
 
@@ -58,34 +57,31 @@ module.exports = class Product {
 
     static fetchProduct(id) {
         return new Promise((resolve, reject) => {
-            fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const products = JSON.parse(fileContent);
+            Product.fetchAll()
+                .then(products => {
                     const product = products.find(product => id === product.id);
+
                     resolve(product);
-                }
-            });
+                })
+                .catch(err => {
+                    reject(err);
+                });
         });
     }
 
-    static editProduct(id, product) {
+    static editProduct(product) {
         return new Promise((resolve, reject) => {
-            fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    const oldProducts = JSON.parse(fileContent);
-                    const products = oldProducts.map(prod => {
-                        if (id === prod.id) {
+            Product.fetchAll()
+                .then(products => {
+                    const editedProducts = products.map(prod => {
+                        if (product.id === prod.id) {
                             return product;
                         } else {
                             return prod;
                         }
                     });
 
-                    const productsJson = JSON.stringify(products);
+                    const productsJson = JSON.stringify(editedProducts);
                     fs.writeFile(p, productsJson, err => {
                         if (err) {
                             reject(err);
@@ -93,8 +89,10 @@ module.exports = class Product {
                             resolve();
                         }
                     });
-                }
-            });
+                })
+                .catch(err => {
+                    reject(err);
+                });
         });
     }
 };
