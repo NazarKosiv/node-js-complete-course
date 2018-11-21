@@ -41,6 +41,10 @@ module.exports = class Product {
         });
     }
 
+    static saveAll(users) {
+
+    }
+
     static fetchAll() {
         return new Promise((resolve, reject) => {
             fs.readFile(p, {encoding: 'utf-8'}, (err, fileContent) => {
