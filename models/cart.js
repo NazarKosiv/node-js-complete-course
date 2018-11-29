@@ -6,19 +6,23 @@ module.exports = class Cart {
         this.price = 0;
     }
 
-    addProduct(productId) {
-        const productIndex = this.products.findIndex(product => productId === product.id);
+    static addProduct(products, productId, price) {
+        const productIndex = products.findIndex(product => productId === product.id);
+        const newProducts = [...products];
 
         if (productIndex !== -1) {
-            this.products[productIndex].addQuantity();
+            newProducts[productIndex].quantity += 1;
         } else {
-            const product = new ProductCart(productId);
+            const product = new ProductCart(productId, price);
 
-            this.products.push(product);
+            newProducts.push(product);
         }
+
+        return newProducts;
     }
 
-    fetchCart() {
-
+    static calculatePrice(products) {
+        return products.map(product => product.price * product.quantity)
+            .reduce((accumulator, currentValue) => accumulator + currentValue);
     }
 };

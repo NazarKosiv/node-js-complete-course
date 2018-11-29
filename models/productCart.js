@@ -1,10 +1,7 @@
 module.exports = class ProductCart {
-    constructor(productId) {
+    constructor(productId, price) {
         this.productId = productId;
+        this.price = price;
         this.quantity = 1;
-    }
-
-    addQuantity(num = 1) {
-        this.quantity += num;
     }
 };

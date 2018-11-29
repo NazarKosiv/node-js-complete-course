@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const idGenerator = require('../util/unique-id-generator');
+const Cart = require('../models/cart');
 
 const p = path.join(
     path.dirname(process.mainModule.filename),
@@ -14,30 +15,82 @@ module.exports = class User {
         this.id = idGenerator();
         this.login = login;
         this.password = password;
-        this.authenticated = false;
         this.expireDate = new Date().getMilliseconds() + 1000 * 60 * 30;
 
-        this.orders = [];
-        this.cart = [];
+        this.cart = new Cart();
     }
 
-    authenticate(login, password) {
+    static authenticate(login, password) {
         return new Promise((resolve, reject) => {
-            if (login === this.login && password === this.password) {
-                this.expireDate = new Date().getMilliseconds() + 1000 * 60 * 30;
+            User.fetchAll()
+                .then(users => {
+                    const userIndex = users.findIndex(user => login === user.login && password === user.password);
 
-                resolve(this.expireDate);
-            } else {
-                reject();
-            }
+                    if (userIndex !== -1) {
+                        users[userIndex].expireDate = new Date().getMilliseconds() + 1000 * 60 * 30;
+
+                        User.saveAll(users)
+                            .then(() => {
+                                resolve();
+                            })
+                            .catch(err => {
+                                reject(err);
+                            });
+                    } else {
+                        reject();
+                    }
+                })
+                .catch(error => reject(error));
         });
     }
 
-    addOrder() {
+    static keepAlive(users, userIndex) {
+        return new Promise((resolve, reject) => {
+            users[userIndex].expireDate = new Date().getMilliseconds() + 1000 * 60 * 30;
 
+            User.saveAll(users)
+                .then(() => {
+                    resolve();
+                })
+                .catch(err => {
+                    reject(err);
+                });
+        });
     }
 
-    addToCart(productId) {
+    static isAuthenticated(login, password) {
+        return new Promise((resolve, reject) => {
+            User.fetchAll()
+                .then(users => {
+                    const userIndex = users.findIndex(user => login === user.login && password === user.password);
+
+                    if (userIndex !== -1) {
+                        const expireDate = users[userIndex].expireDate;
+                        const now = new Date().getMilliseconds();
+
+                        if (now > expireDate) {
+                            resolve(false);
+                        } else {
+                            User.keepAlive(users, userIndex)
+                                .then(() => {
+                                    resolve(true);
+                                })
+                                .catch(err => {
+                                    reject(err);
+                                });
+                        }
+
+                    } else {
+                        reject();
+                    }
+                })
+                .catch(err => {
+                    reject(err);
+                });
+        });
+    }
+
+    static addToCart(productId) {
 
     }
 
@@ -49,7 +102,7 @@ module.exports = class User {
 
                     User.saveAll(newUsers)
                         .then(() => {
-                            resolve();
+                            resolve(this.id);
                         })
                         .catch(err => {
                             reject(err);
@@ -73,7 +126,7 @@ module.exports = class User {
     }
 
     static saveAll(data) {
-        const users = JSON.parse(data);
+        const users = JSON.stringify(data);
 
         return new Promise((resolve, reject) => {
             fs.writeFile(p, users, err => {

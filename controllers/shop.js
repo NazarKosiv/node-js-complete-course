@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const User = require('../models/user');
 
 exports.getProducts = (req, res, next) => {
     Product.fetchAll()
@@ -55,5 +56,40 @@ exports.getOrders = (req, res, next) => {
     res.render('shop/orders', {
         path: '/orders',
         pageTitle: 'Orders'
+    });
+};
+
+exports.login = (req, res) => {
+    res.render('shop/login', {
+        path: '/login',
+        pageTitle: 'Login',
+        type: 'login'
+    });
+};
+
+exports.register = (req, res) => {
+    const login = req.body.login;
+    const password = req.body.password;
+
+    const user = new User(login, password);
+    user.save()
+        .then(userId => {
+            res.redirect(`/?id=${userId}`);
+        });
+};
+
+exports.getLoginPage = (req, res) => {
+    res.render('shop/login', {
+        path: '/login',
+        pageTitle: 'Login',
+        type: 'login'
+    });
+};
+
+exports.getRegisterPage = (req, res) => {
+    res.render('shop/login', {
+        path: '/register',
+        pageTitle: 'Register',
+        type: 'register'
     });
 };

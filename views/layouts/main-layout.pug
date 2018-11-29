@@ -27,6 +27,10 @@ html(lang="en")
                         a(href="/checkout", class=(path === '/checkout') ? 'active' : '') Checkout
                     li.main-header__item
                         a(href="/orders", class=(path === '/orders') ? 'active' : '') Orders
+                    li.main-header__item
+                        a(href="/login", class=(path === '/login') ? 'active' : '') Login
+                    li.main-header__item
+                        a(href="/register", class=(path === '/register') ? 'active' : '') Register
         nav.mobile-nav
             ul.mobile-nav__item-list
                 li.mobile-nav__item
@@ -43,5 +47,9 @@ html(lang="en")
                     a(href="/checkout", class=(path === '/checkout') ? 'active' : '') Checkout
                 li.mobile-nav__item
                     a(href="/orders", class=(path === '/orders') ? 'active' : '') Orders
+                li.mobile-nav__item
+                    a(href="/login", class=(path === '/login') ? 'active' : '') Login
+                li.mobile-nav__item
+                    a(href="/register", class=(path === '/register') ? 'active' : '') Register
         block content
         script(src='/js/main.js')
