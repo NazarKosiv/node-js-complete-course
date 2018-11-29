@@ -15,9 +15,30 @@ module.exports = class User {
         this.login = login;
         this.password = password;
         this.authenticated = false;
+        this.expireDate = new Date().getMilliseconds() + 1000 * 60 * 30;
 
         this.orders = [];
         this.cart = [];
+    }
+
+    authenticate(login, password) {
+        return new Promise((resolve, reject) => {
+            if (login === this.login && password === this.password) {
+                this.expireDate = new Date().getMilliseconds() + 1000 * 60 * 30;
+
+                resolve(this.expireDate);
+            } else {
+                reject();
+            }
+        });
+    }
+
+    addOrder() {
+
+    }
+
+    addToCart(productId) {
+
     }
 
     save() {
